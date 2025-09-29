@@ -1,0 +1,12 @@
+Instructions
+
+1) Create a folder to save the project
+
+2) Create virtual env --> python -m venv [venv] 
+Failed: Not able to create venv with python
+
+3) Activate the env --> .\venv\Scripts\Activate
+
+4) Install the dbt from Snowflake --> pip install dbt-snowflake==1.10.2
+
+
