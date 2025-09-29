@@ -67,6 +67,12 @@ FROM (
 );
 
 
-7) 
+7) List the files
+
+LIST @de_demo.staging.ursa_stage/2019/
+
+8) Show data in table 
+
+SELECT * FROM de_demo.staging.yellow_trips_stg LIMIT 5;
 
 
