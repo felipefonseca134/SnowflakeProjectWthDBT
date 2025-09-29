@@ -2,10 +2,71 @@ Snowflake side
 
 1) Create database and schema
 
-CREATE DATABASE ventas_dw;
-CREATE SCHEMA ventas_dw.staging;
-CREATE SCHEMA ventas_dw.analytics;
+CREATE DATABASE de_demo;
+CREATE SCHEMA de_demo.staging;
+CREATE SCHEMA de_demo.analytics;
 
 2) Creta datawarehouse
 
-CREATE WAREHOUSE my_wh WITH WAREHOUSE_SIZE = 'XSMALL' AUTO_SUSPEND = 60 AUTO_RESUME = TRUE;
+CREATE WAREHOUSE de_wh WITH WAREHOUSE_SIZE='XSMALL' AUTO_SUSPEND=60 AUTO_RESUME=TRUE;
+
+3) Create file formats for parquets files
+
+CREATE OR REPLACE FILE FORMAT de_demo.staging.parquet_fmt TYPE = PARQUET;
+
+4) Create stage using file format from previous file format
+
+CREATE OR REPLACE STAGE de_demo.staging.ursa_stage
+  URL='s3://ursa-labs-taxi-data'
+  FILE_FORMAT = de_demo.staging.parquet_fmt;
+
+5) Create table at Stagging table
+
+CREATE OR REPLACE TABLE de_demo.staging.yellow_trips_stg (
+  vendorid NUMBER,
+  tpep_pickup_datetime TIMESTAMP,
+  tpep_dropoff_datetime TIMESTAMP,
+  passenger_count NUMBER,
+  trip_distance FLOAT,
+  ratecodeid NUMBER,
+  pulocationid NUMBER,
+  dolocationid NUMBER,
+  payment_type NUMBER,
+  fare_amount FLOAT,
+  extra FLOAT,
+  mta_tax FLOAT,
+  tip_amount FLOAT,
+  tolls_amount FLOAT,
+  total_amount FLOAT
+);
+
+6) Load a test file into the table
+
+structure from $1:[name of the colum]::[column type]
+
+COPY INTO de_demo.staging.yellow_trips_stg
+FROM (
+  SELECT
+    $1:VendorID::NUMBER,
+    $1:tpep_pickup_datetime::TIMESTAMP,
+    $1:tpep_dropoff_datetime::TIMESTAMP,
+    $1:passenger_count::NUMBER,
+    $1:trip_distance::FLOAT,
+    $1:RatecodeID::NUMBER,
+    $1:PULocationID::NUMBER,
+    $1:DOLocationID::NUMBER,
+    $1:payment_type::NUMBER,
+    $1:fare_amount::FLOAT,
+    $1:extra::FLOAT,
+    $1:mta_tax::FLOAT,
+    $1:tip_amount::FLOAT,
+    $1:tolls_amount::FLOAT,
+    $1:total_amount::FLOAT
+  FROM @de_demo.staging.ursa_stage/2019/06/data.parquet
+  ( FILE_FORMAT => de_demo.staging.parquet_fmt )
+);
+
+
+7) 
+
+
