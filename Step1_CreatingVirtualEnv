@@ -13,16 +13,4 @@ Failed: Not able to create venv with python
 
 5) Check if dbt was installed correctly -> dbt --version
 
-Snowflake side
-
-1) Create database and schema
-
-CREATE DATABASE ventas_dw;
-CREATE SCHEMA ventas_dw.staging;
-CREATE SCHEMA ventas_dw.analytics;
-
-2) Creta datawarehouse
-
-CREATE WAREHOUSE my_wh WITH WAREHOUSE_SIZE = 'XSMALL' AUTO_SUSPEND = 60 AUTO_RESUME = TRUE;
-
 
