@@ -1,5 +1,7 @@
 Instructions
 
+DBT Side
+
 1) Create a folder to save the project
 
 2) Create virtual env --> python -m venv [venv] 
@@ -8,5 +10,19 @@ Failed: Not able to create venv with python
 3) Activate the env --> .\venv\Scripts\Activate
 
 4) Install the dbt from Snowflake --> pip install dbt-snowflake==1.10.2
+
+5) Check if dbt was installed correctly -> dbt --version
+
+Snowflake side
+
+1) Create database and schema
+
+CREATE DATABASE ventas_dw;
+CREATE SCHEMA ventas_dw.staging;
+CREATE SCHEMA ventas_dw.analytics;
+
+2) Creta datawarehouse
+
+CREATE WAREHOUSE my_wh WITH WAREHOUSE_SIZE = 'XSMALL' AUTO_SUSPEND = 60 AUTO_RESUME = TRUE;
 
 
