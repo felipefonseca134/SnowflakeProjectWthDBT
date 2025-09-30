@@ -10,17 +10,51 @@ CREATE SCHEMA de_demo.analytics;
 
 CREATE WAREHOUSE de_wh WITH WAREHOUSE_SIZE='XSMALL' AUTO_SUSPEND=60 AUTO_RESUME=TRUE;
 
-3) Create file formats for parquets files
+3) Create DBT user
+
+-- Use an admin role
+USE ROLE ACCOUNTADMIN;
+
+-- Create the `transform` role
+CREATE ROLE IF NOT EXISTS TRANSFORM;
+GRANT ROLE TRANSFORM TO ROLE ACCOUNTADMIN;
+
+-- Create the default warehouse if necessary
+CREATE WAREHOUSE IF NOT EXISTS de_wh;
+GRANT OPERATE ON WAREHOUSE de_wh TO ROLE TRANSFORM;
+
+CREATE USER IF NOT EXISTS dbt
+  PASSWORD='dbtPassword123'
+  LOGIN_NAME='dbt'
+  MUST_CHANGE_PASSWORD=FALSE
+  DEFAULT_WAREHOUSE='de_wh'
+  DEFAULT_ROLE=TRANSFORM
+  DEFAULT_NAMESPACE='de_demo.staging'
+  COMMENT='DBT user used for data transformation';
+ALTER USER dbt SET TYPE = LEGACY_SERVICE;
+GRANT ROLE TRANSFORM to USER dbt;
+
+-- Set up permissions to role `transform`
+GRANT ALL ON WAREHOUSE de_wh TO ROLE TRANSFORM; 
+GRANT ALL ON DATABASE de_demo to ROLE TRANSFORM;
+GRANT ALL ON ALL SCHEMAS IN DATABASE de_demo to ROLE TRANSFORM;
+GRANT ALL ON FUTURE SCHEMAS IN DATABASE de_demo to ROLE TRANSFORM;
+GRANT ALL ON ALL TABLES IN de_demo.staging to ROLE TRANSFORM;
+GRANT ALL ON FUTURE TABLES IN SCHEMA de_demo.staging to ROLE TRANSFORM;
+GRANT ALL ON ALL TABLES IN SCHEMA de_demo.analytics to ROLE TRANSFORM;
+GRANT ALL ON FUTURE TABLES IN SCHEMA de_demo.analytics to ROLE TRANSFORM;
+
+4) Create file formats for parquets files
 
 CREATE OR REPLACE FILE FORMAT de_demo.staging.parquet_fmt TYPE = PARQUET;
 
-4) Create stage using file format from previous file format
+5) Create stage using file format from previous file format
 
 CREATE OR REPLACE STAGE de_demo.staging.ursa_stage
   URL='s3://ursa-labs-taxi-data'
   FILE_FORMAT = de_demo.staging.parquet_fmt;
 
-5) Create table at Stagging table
+6) Create table at Stagging table
 
 CREATE OR REPLACE TABLE de_demo.staging.yellow_trips_stg (
   vendorid NUMBER,
@@ -40,7 +74,7 @@ CREATE OR REPLACE TABLE de_demo.staging.yellow_trips_stg (
   total_amount FLOAT
 );
 
-6) Load a test file into the table
+7) Load a test file into the table
 
 structure from $1:[name of the colum]::[column type]
 
@@ -67,11 +101,11 @@ FROM (
 );
 
 
-7) List the files
+8) List the files
 
 LIST @de_demo.staging.ursa_stage/2019/
 
-8) Show data in table 
+9) Show data in table 
 
 SELECT * FROM de_demo.staging.yellow_trips_stg LIMIT 5;
 
