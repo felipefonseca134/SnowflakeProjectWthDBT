@@ -23,5 +23,9 @@ cd TaxiProject
 
 dbt debug
 
+WARNING RUN AS ADMIN
+
+
+
 
 
