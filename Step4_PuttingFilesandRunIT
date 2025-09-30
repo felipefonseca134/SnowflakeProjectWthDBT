@@ -1,0 +1,6 @@
+1) Delete last two lines on dbt_project.yml
+2) Remove all files on Folder "Models"
+3) Run this command
+dbt run -m dim_vendor dim_rate_code dim_payment_type fact_trips
+4) Run this command
+dbt run -m fact_trips
